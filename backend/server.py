@@ -3,9 +3,13 @@ from flask_cors import CORS
 import requests
 from pymongo import MongoClient
 import jwt
+from dotenv import load_dotenv
+import os
 
 server = Flask(__name__)
 CORS(server,resources={r"*": {"origins": "*"}})
+
+load_dotenv()
 
 uri = "mongodb+srv://admin:admin@cluster0.cbp8dvl.mongodb.net/?retryWrites=true&w=majority"
 
@@ -27,13 +31,15 @@ ForEmail = 'https://api.linkedin.com/v2/clientAwareMemberHandles?q=members&proje
 ForUserProfile = 'https://api.linkedin.com/v2/me?projection=(id,localizedFirstName,localizedLastName,profilePicture(displayImage~digitalmediaAsset:playableStreams))'
 
 def getAccessToken(code):
+    client_id = os.getenv('CLIENT_ID')
+    client_secret = os.getenv('CLIENT_SECRET')
     Headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     parameters = {
         'grant_type': 'authorization_code',
         'code': code,
         'redirect_uri': 'http://localhost:5173/',
-        'client_id':'86zllnqjpdcyws',
-        'client_secret':'9jbQvqg1Gmyun0O5'
+        'client_id':client_id,
+        'client_secret':client_secret
     }
     token = requests.post(forAccessToken,data=parameters,headers=Headers)
     return token.json().get('access_token')
